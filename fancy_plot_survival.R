@@ -6,7 +6,7 @@ library(ggplot2)
 library(survival)
 
 
-plot.survival.fancy=function(s, conf.int=F, auto.scale=F, xmax=0, mark.time=T, displace.groups=F, levels=c(), reorder.groups=T, reorder.groups.FUN=NULL, xlim=NULL, ...){
+plot.survival.fancy=function(s, conf.int=F, auto.scale=F, xmax=0, marker=c("point","blank"), displace.groups=F, levels=c(), reorder.groups=T, reorder.groups.FUN=NULL, xlim=NULL, ...){
 	s.plot=data.frame(time=NA, surv=NA, min=NA, max=NA, group=NA, evnt=NA) # is there a better way to create an empty data.frame?
 	pind=1
 	if(length(names(s$strata)))
@@ -29,7 +29,7 @@ plot.survival.fancy=function(s, conf.int=F, auto.scale=F, xmax=0, mark.time=T, d
 	if(xmax) s.plot=subset(s.plot, time< xmax)
 	if( max (is.na(s.plot$group)) )
 	{	s.plot=s.plot[order(s.plot$time), ];
-		q=qplot(time, surv, data= subset(s.plot, evnt==0 & time>0), geom=ifelse(mark.time,"point","blank"),...)
+		q=qplot(time, surv, data= subset(s.plot, evnt==0 & time>0), geom=marker,...)
 		if(!is.null(xlim)) q=q+ coord_cartesian(xlim = xlim)
 		if(auto.scale)
 			if(conf.int)
@@ -73,10 +73,10 @@ plot.survival.fancy=function(s, conf.int=F, auto.scale=F, xmax=0, mark.time=T, d
 		s.plot=s.plot[order(s.plot$group,s.plot$time), ];
 
 		if(length(stratavec))
-			 q=qplot(time, surv, data= subset(s.plot, evnt==0&time>0), geom=ifelse(mark.time,"point","blank"), colour=group, facets= stratum ~., ...)
+			 q=qplot(time, surv, data= subset(s.plot, evnt==0&time>0), geom=marker, colour=group, facets= stratum ~., ...)
 		else
 		{   my.df= subset(s.plot, evnt==0&time>0)
-			my.geom= ifelse(mark.time,"point","blank")
+			my.geom= marker
 			if(nrow(my.df)==0)
 			{
 				my.df=s.plot
